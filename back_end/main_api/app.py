@@ -1,38 +1,35 @@
-from flask import Flask, render_template, request, make_response, abort
-import json
+from flask import Flask, render_template, request, abort, jsonify
 from flask_cors import CORS
-from flask_pymongo import PyMongo
+from Database_adaptor import Database_adaptor
 
-
-# Configuro la connessione a mongodb.
-def db_init(app):
-    dbName = "images"
-    app.config[ "MONGO_URI" ] = "mongodb://localhost:27017/" + dbName
-    mongo = PyMongo(app)
-    return mongo
 
 app = Flask(__name__)
-# Permetto le richieste CORS
-CORS(app)
 
 
 # Main path (test)
 @app.route('/')
 def hello_world():
+    """
+        Main page con html per il caricamento
+    """
     return render_template("home.html")
 
 # Route per l'upload di un file
-@app.route('/upload', methods=["POST"])
-def upload():
+
+
+@app.route('/api/upload/input=<inputFile>', methods=["POST"])
+def upload(inputFile):
     """
         Path per l'upload di un file mandato tramite richiesta POST.
         Il file viene salvato nel database Mongo.
+        :param: immagine
+        :return: json con id del file caricato
     """
-    file = request.files["inputFile"]
+    file = request.files[inputFile]
     if not file:
         abort(
             404,
-            description = "No file Selected"
+            description="No file Selected"
         )
 
     # stato del file. Metadati. Per il momento solo processato (dal ML) e permaSaved (nell'OS)
@@ -42,24 +39,41 @@ def upload():
         "processed": False,
         "permaSaved": False,
     }
-    # Metodo di flask_pymongo per salvare i file di grandi dimensioni (tramite GridFS)
-    # Nota che se non specificato, il formato viene indovinato tramite guess_type()
-    # È possibile passare altri attributi da salvare nel db (tipo stato: processato/non processato ecc)
-    # Vedi documentazione flask_pymongo
-    mongo.save_file(file.filename, file, state=state)
-    return make_response(f"File {file.filename} uploaded")
+    fileId = database.save_image(file.filename, file, state=state)
+    return jsonify({"id": str(fileId)})
+
+# Route per fare la query allo stato del file nel db da parte degli altri servizi
+
+
+@app.route('/api/get_state/id=<file_Id>')
+def getState(file_Id):
+    """
+        :param: fileId -> Id del file da controllare.
+        :return: json con stato dell'oggetto, 404 se file inesistente
+    """
+    file_Id = database.type_conversion(file_Id)
+    file_obj = database.find_one({"_id": file_Id})
+    if not file_obj:
+        abort(
+            404,
+            description="Invalid id"
+        )
+    return jsonify(file_obj["state"])
+
 
 # get del file tramite il filename
-@app.route("/read/<path:filename>")
-def get_file(filename):
-    return mongo.send_file(filename)
-
-# TODO possibilità di leggere la lista di tutte le foto
-@app.route("/read")
-def read_all():
-    return make_response(str(mongo.cx.fs.files.find()))
+# NOTA: questo metodo è di debug, il filename non è detto che sia unico
+@app.route('/api/view_one/name=<path:fileName>')
+def getFile(file_name):
+    """
+        :param: fileName -> nome del file
+        :return: prima occorrenza dell'immagine con nome richiesto
+    """
+    return database.send_image(file_name)
 
 
 if __name__ == "__main__":
-    mongo = db_init(app)
+    database = Database_adaptor(app, "images")
+    # Permetto le richieste CORS
+    CORS(app)
     app.run(host="0.0.0.0", debug=True)

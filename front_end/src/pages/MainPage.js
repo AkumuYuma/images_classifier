@@ -8,7 +8,7 @@ class MainPage extends React.Component {
             <div className="page">
                 <div className="container">
                     <h1 className="heading">Add your image</h1>
-                    <FileHandler />
+                    <FileHandler name="inputFile" />
                 </div>
             </div>
         );
