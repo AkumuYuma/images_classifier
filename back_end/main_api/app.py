@@ -34,12 +34,19 @@ def upload():
             404,
             description = "No file Selected"
         )
+
+    # stato del file. Metadati. Per il momento solo processato (dal ML) e permaSaved (nell'OS)
+    # Gli altri servizi andranno a cercare nel db tramite lo stato del file
+    # prenderanno i file di interesse, li processeranno e modificheranno lo stato del file nel db.
+    state = {
+        "processed": False,
+        "permaSaved": False,
+    }
     # Metodo di flask_pymongo per salvare i file di grandi dimensioni (tramite GridFS)
     # Nota che se non specificato, il formato viene indovinato tramite guess_type()
-    # È possibile passare altri attributi da salvare nel db (tipo stato: processato/non processato exx)
+    # È possibile passare altri attributi da salvare nel db (tipo stato: processato/non processato ecc)
     # Vedi documentazione flask_pymongo
-    # TODO trovare il modo di salvare il file con un indice incrementale
-    mongo.save_file(file.filename, file)
+    mongo.save_file(file.filename, file, state=state)
     return make_response(f"File {file.filename} uploaded")
 
 # get del file tramite il filename
