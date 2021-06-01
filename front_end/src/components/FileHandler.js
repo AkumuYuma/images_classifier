@@ -4,7 +4,6 @@ import axios from 'axios';
 // Dizionario per i path di base dell'api
 const apiPaths = {
     baseUploadUrl: "http://localhost:5000/api/upload/input="
-
 }
 
 
