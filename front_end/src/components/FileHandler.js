@@ -1,67 +1,36 @@
-import React from 'react';
+import {useState} from 'react';
 import axios from 'axios';
 
+// Base url dell'api:
+// NOTA: Prima di andare in production bisogna salvare queste stringhe in env variables
+const baseUrl = "http://localhost:5000"
 // Dizionario per i path di base dell'api
 const apiPaths = {
-    baseUploadUrl: "http://localhost:5000/api/upload/input="
+    baseUploadUrl: baseUrl + "/api/upload/input=",
+    baseQueryUrl: baseUrl + "/api/get_state/id="
 }
 
 
-class Image extends React.Component {
-    // Componente per renderizzazione immagine
-    // usa la proprietà image per scegliere l'immagine da renderizzare
-    render() {
-        if (this.props.image != null) {
-            return <img className={this.props.className} src={this.props.image} id="target" alt="" />;
-        } else {
-            return null;
-        }
-    }
-}
+function FileHandler(props) {
+    // Hooks per lo stato
+    // File selezionato
+    const [selectedFile, setSelectedFile] = useState(null);
+    // id del file nel database
+    const [fileId, setFileId] = useState(null);
+    // stato del file nel database
+    const [status, setStatus] = useState(null);
 
 
-class FileHandler extends React.Component {
-    // Componente per la gestione del caricamento del file
-    constructor(props) {
-        super(props);
-        // Lo stato contiene sempre il file selezionato
-        this.state = {
-            selectedFile: null,
-            selectedFileUrl: null,
-            fileId: null
-        };
-        // Bind di this ai metodi
-        this.fileSelectedHandler = this.fileSelectedHandler.bind(this);
-        this.fileUploadHandler = this.fileUploadHandler.bind(this);
-    }
-
-
-    fileSelectedHandler(event) {
-        // Gestione scelta del file
-        // Se ho il file aggiorno lo stato
-        if (event.target.files && event.target.files[0]) {
-            this.setState({
-                selectedFileUrl: URL.createObjectURL(event.target.files[0]),
-                selectedFile: event.target.files[0],
-                fileId: this.state.fileId
-            })
-        }
-    }
-
-    fileUploadHandler() {
+    const handleSubmit = () => {
         // Gestione Click su tasto upload
         // Invio l'immagine all'api
-        if (this.state.selectedFile != null) {
+        if (selectedFile != null) {
             const fd = new FormData();
-            fd.append(this.props.name, this.state.selectedFile);
-            axios.post(apiPaths.baseUploadUrl + this.props.name, fd)
+            fd.append(props.name, selectedFile);
+            axios.post(apiPaths.baseUploadUrl + props.name, fd)
                 .then(res => {
                     // Aggiorno lo stato inserendo l'id ottenuto come risposta
-                    this.setState({
-                        selectedFile: this.state.selectedFile.selectedFile,
-                        selectedFileUrl: this.state.selectedFileUrl,
-                        fileId: res.data.id
-                    });
+                    setFileId(res.data.id);
                 })
                 .catch(err => {
                     console.log(err);
@@ -69,27 +38,56 @@ class FileHandler extends React.Component {
         }
     }
 
-    render() {
-        return (
-            <div>
-                <Image className="img-holder" image={this.state.selectedFileUrl} />
-                <input type="file" name={this.props.name} id="input-file" accept="image/*" onChange={this.fileSelectedHandler} />
-                <div className="label">
-                    <label htmlFor="input-file" className="image-upload">
-                        {/* Questo è un alias per il bottone scegli. Scelgo la foto tramite l'immagine */}
-                        <i className="material-icons">add_photo_alternate</i>
-                        Choose your photo
-                    </label>
-                </div>
-                <button className="submit" onClick={this.fileUploadHandler}>Upload Image</button>
-                {/*Stampa l'id nel db dell'oggetto appena caricato
-                    TODO: Possibilità di query per lo stato del processamento.
-                    TODO: Barra di avanzamento dell'upload
-                */}
-                <p className="objectId">{this.state.fileId}</p>
-            </div>
-        );
+    const queryStatus = () => {
+        // Gestione per richiesta dello stato di processamento
+        if (fileId != null) {
+            axios.get(apiPaths.baseQueryUrl + fileId)
+                .then(res => {
+                    setStatus(res.data);
+                })
+        }
     }
+
+    return (
+        <div>
+            {/* Renderizzazione condizionale dell'immagine */}
+            {selectedFile != null && (
+                <img className="img-holder" src={URL.createObjectURL(selectedFile)} />
+            )}
+
+            {/* Input */}
+            <input type="file" name={props.name} id="input-file" accept="image/*" onChange={event => {
+                // Aggiorno il file selezionato
+                if (event.target.files && event.target.files[0]) setSelectedFile(event.target.files[0]);
+            }} />
+            {/* Label per immagine al posto del tasto */}
+            <div className="label">
+                <label htmlFor="input-file" className="image-upload">
+                    {/* Questo è un alias per il bottone scegli. Scelgo la foto tramite l'immagine */}
+                    <i className="material-icons">add_photo_alternate</i>
+                    Choose your photo
+                </label>
+            </div>
+
+            {/* Tasto per upload */}
+            <button className="submit" onClick={handleSubmit}>Upload Image</button>
+            {/* Renderizzazione condizionale dell'id dell'immagine */}
+            {fileId != null && (
+                <p>The file has been saved with id: {fileId} </p>
+            )}
+
+            {/* Tasto per query dello stato */}
+            <button className="getStatus" onClick={queryStatus}>Query status</button>
+            {/* Renderizzazione condizionale dello stato */}
+            {status != null && (
+                <div>
+                    <p>Processato: {status.processed ? "Si" : "No"}</p>
+                    <p>Salvato nello storage: {status.permaSaved ? "Si" : "No"}</p>
+                </div>
+            )}
+        </div>
+    );
 }
+
 
 export default FileHandler;

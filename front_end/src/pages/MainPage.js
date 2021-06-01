@@ -1,5 +1,5 @@
 import React from 'react';
-import FileHandler from '../components/FH'
+import FileHandler from '../components/FileHandler'
 
 class MainPage extends React.Component {
     render() {
