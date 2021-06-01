@@ -6,6 +6,7 @@ from Database_adaptor import Database_adaptor
 app = Flask(__name__)
 
 
+
 # Main path (test)
 @app.route('/')
 def hello_world():
@@ -14,9 +15,8 @@ def hello_world():
     """
     return render_template("home.html")
 
+
 # Route per l'upload di un file
-
-
 @app.route('/api/upload/input=<inputFile>', methods=["POST"])
 def upload(inputFile):
     """
@@ -63,7 +63,7 @@ def getState(file_Id):
 
 # get del file tramite il filename
 # NOTA: questo metodo è di debug, il filename non è detto che sia unico
-@app.route('/api/view_one/name=<path:fileName>')
+@app.route('/api/view_one/name=<path:file_name>')
 def getFile(file_name):
     """
         :param: fileName -> nome del file
