@@ -6,7 +6,7 @@ class MainPage extends React.Component {
         return (
             <div className="page">
                 <div className="container">
-                    <h1 className="heading">Image analyzer</h1>
+                    <h1 className="heading">EikonApp</h1>
                     <FileHandler name="inputFile" />
                 </div>
             </div>

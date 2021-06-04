@@ -1,4 +1,4 @@
-import './App.css';
+import './Stile.css';
 import {
     BrowserRouter as Router,
     Switch,
