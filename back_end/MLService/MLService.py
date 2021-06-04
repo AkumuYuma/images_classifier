@@ -5,7 +5,7 @@ import time
 
 
 # Classe analizzatore
-from random import randint
+from random import randint, uniform
 
 class Analizzatore():
     def __init__(self):
@@ -36,10 +36,11 @@ def demone():
     # Prendo il db
     db = client.images
     while True:
+        identificativo = uniform(0, 1000)
         # Flaggo il file come in processamento
-        db.fs.files.update_one({"processed": False}, {"$set": {"processing": True}})
+        db.fs.files.update_one({"processed": False}, {"$set": {"processing": identificativo}})
         # Prendo il file facendo la query
-        element = db.fs.files.find_one({"processing": True})
+        element = db.fs.files.find_one({"processing": identificativo})
         # print(element)
         if element is not None:
             print(f"Trovato un elemento in analisi...")
@@ -48,7 +49,7 @@ def demone():
             print(f"Elemento analizzato, aggiorno lo stato nel database...")
             # Aggiorno il file dicendo che è stato processato ed elimino la flag di processamento
             # Aggiorno anche il campo classe
-            db.fs.files.update_one({"processing": True}, {"$set": {"processed": True, "classification": classe}, "$unset": {"processing": 1}})
+            db.fs.files.update_one({"processing": identificativo}, {"$set": {"processed": True, "classification": classe}, "$unset": {"processing": 1}})
 
         # Faccio il fetch ogni secondo
         time.sleep(1)
