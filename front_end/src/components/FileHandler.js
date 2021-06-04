@@ -25,6 +25,8 @@ function FileHandler(props) {
         // Gestione Click su tasto upload
         // Invio l'immagine all'api
         if (selectedFile != null) {
+            // Rimuovo lo stato precedente
+            setStatus(null);
             const fd = new FormData();
             fd.append(props.name, selectedFile);
             axios.post(apiPaths.baseUploadUrl + props.name, fd)
@@ -49,7 +51,7 @@ function FileHandler(props) {
     }
 
     return (
-        <div>
+        <>
             {/* Renderizzazione condizionale dell'immagine */}
             {selectedFile != null && (
                 <img className="img-holder" src={URL.createObjectURL(selectedFile)} />
@@ -85,7 +87,10 @@ function FileHandler(props) {
                     <p>Salvato nello storage: {status.permaSaved ? "Si" : "No"}</p>
                 </div>
             )}
-        </div>
+            {status != null && status.classification != null && (
+                <p>Predizione: {status.classification}</p>
+            )}
+        </>
     );
 }
 

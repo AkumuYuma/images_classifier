@@ -35,18 +35,14 @@ def upload(inputFile):
     # stato del file. Metadati. Per il momento solo processato (dal ML) e permaSaved (nell'OS)
     # Gli altri servizi andranno a cercare nel db tramite lo stato del file
     # prenderanno i file di interesse, li processeranno e modificheranno lo stato del file nel db.
-    state = {
-        "processed": False,
-        "permaSaved": False,
-    }
-    fileId = database.save_image(file.filename, file, state=state)
+    fileId = database.save_image(file.filename, file, processed=False, permaSaved=False, classification=None)
     return jsonify({"id": str(fileId)})
 
 # Route per fare la query allo stato del file nel db da parte degli altri servizi
 
 
 @app.route('/api/get_state/id=<file_Id>')
-def getState(file_Id):
+def get_state(file_Id):
     """
         :param: fileId -> Id del file da controllare.
         :return: json con stato dell'oggetto, 404 se file inesistente
@@ -58,13 +54,18 @@ def getState(file_Id):
             404,
             description="Invalid id"
         )
-    return jsonify(file_obj["state"])
+    res = {
+        "processed": file_obj["processed"],
+        "permaSaved": file_obj["permaSaved"],
+        "classification": file_obj["classification"]
+    }
+    return jsonify(res)
 
 
 # get del file tramite il filename
 # NOTA: questo metodo è di debug, il filename non è detto che sia unico
-@app.route('/api/view_one/name=<path:file_name>')
-def getFile(file_name):
+@app.route('/api/view_one/name=<file_name>')
+def get_file(file_name):
     """
         :param: fileName -> nome del file
         :return: prima occorrenza dell'immagine con nome richiesto
