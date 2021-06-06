@@ -2,7 +2,6 @@ from pymongo import MongoClient
 from random import uniform
 import time
 
-
 class Salvatore():
 
     def salva_immagine(self, image):
