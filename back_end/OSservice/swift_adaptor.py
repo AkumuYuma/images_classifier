@@ -9,6 +9,10 @@ import json
 import os
 import subprocess
 
+def stampa_dizionario(dizionario):
+    for el in dizionario:
+        print(el + ": " + dizionario[el])
+
 class Swift_adaptor():
     def __init__(self):
         # Leggo il token e l'url dai file nel sistema
@@ -21,18 +25,38 @@ class Swift_adaptor():
         self._auth_headers = { 'x-auth-token': self._os_token }
 
     def stampa_info_account(self):
+        """
+            Stampa informazioni generiche sul OS. (Info sull'account e containers)
+        """
         response = requests.get(self._os_storage_url, headers = self._auth_headers)
-        # TODO debug
-        print(response.json())
+        print("")
+        print("Info sull'account: ")
+        stampa_dizionario(response.headers)
+        print("")
+        print("Containers: ")
+        print(response.text)
 
     def aggancia_container(self, nomeContainer):
         """
             Restituisce l'url del container, se non esiste lo crea
         """
+        print("")
         response = requests.get(self._os_storage_url + "/" + nomeContainer, headers = self._auth_headers, verify = False)
-        print(response.json)
+        if response.status_code == 404:
+            # Il container non esiste, devo crearlo
+            print("Il container non esiste, lo creo")
+            response = requests.put(self._os_storage_url + "/" + nomeContainer, headers = self._auth_headers, verify = False)
+            print("Status code della risposta: " + response.status_code)
+        else:
+            print("Trovato un container di nome " + nomeContainer)
+
+        print("Stampo le info sul container: ")
+        stampa_dizionario(response.headers)
+        print("Stampo il conenuto del container: ")
+        print(response.text)
 
 
 
 ad = Swift_adaptor()
 ad.stampa_info_account()
+ad.aggancia_container("container_prova")
