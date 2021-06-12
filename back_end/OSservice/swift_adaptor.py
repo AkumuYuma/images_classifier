@@ -36,30 +36,36 @@ class Swift_adaptor():
         stampa_dizionario(account[0])
         print("Lista dei container: ")
         print(account[1])
+        print("")
 
     def stampa_info_container(self, nome_container):
         """
             Stampa info sul container. Se il container non esiste viene sollevata un'eccezione
         """
-        print("Faccio la richiesta al container")
         print("")
+        print("Faccio la richiesta al container...")
         container = self._swift.get_container(nome_container)
         stampa_dizionario(container[0])
         print("Oggetti nel container: ")
         print(container[1])
+        print("")
 
     def get_info_container(self, nome_container):
         """
-            Ritorna una lista con gli oggetti nel container
+            ritorna il container nome_container
+            response[0] contiene l'header del container
+            response[1] contiene la lista con gli oggetti nel container
         """
-        return self._swift.get_container(nome_container)[1]
+        return self._swift.get_container(nome_container)
 
     def info_oggetto(self, nome_container, nome_oggetto):
         """
-            Restituisce il contenuto dell'oggetto, se non esiste, viene sollevata un'eccezione
+            Restituisce l'oggetto, se non esiste, viene sollevata un'eccezione
+            il valore response[0] contiene gli headers (info) dell'oggetto
+            il valore response[1] contiene il conenuto dell'oggetto
         """
         response = self._swift.get_object(nome_container, nome_oggetto)
-        return response[1]
+        return response
 
     def crea_container(self, nome_container):
         """
@@ -67,11 +73,11 @@ class Swift_adaptor():
         """
         self._swift.put_container(nome_container)
 
-    def crea_oggetto(self, nome_container, nome_oggetto, contenuto):
+    def crea_oggetto(self, nome_container, nome_oggetto, contenuto, etag = None):
         """
             Crea un nuovo oggetto nel container, conenuto deve essere un oggetto di tipo file.
         """
-        self._swift.put_object(nome_container, nome_oggetto, contenuto)
+        self._swift.put_object(nome_container, nome_oggetto, contenuto, etag = None)
 
     def cancella_container(self, nome_container):
         """
@@ -88,6 +94,7 @@ class Swift_adaptor():
 if __name__ == "__main__":
     ad = Swift_adaptor()
     ad.stampa_info_account()
-    # ad.crea_container("immagini")
+    # ad.stampa_info_container("immagini")
+    # nome_immagine = ad.get_info_container("immagini")[1][0]["name"]
     # ad.cancella_oggetto("immagini", nome_immagine)
-    # ad.cancella_container("immagini")
+    ad.stampa_info_account()

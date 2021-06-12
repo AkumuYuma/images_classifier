@@ -30,27 +30,32 @@ class Analizzatore():
 def demone():
     analizzatore = Analizzatore()
     # Prendo il client del db
-    client = MongoClient("mongodb://localhost:27017")
+    print("Connessione al database in corso...")
+    host = "localhost"
+    port = "27017"
+    client = MongoClient("mongodb://" + host + ":" + port)
+    print("Connessione riuscita")
+    print("Cerco file da analizzare...")
     # Prendo il db
     db = client.images
     while True:
-        identificativo = uniform(0, 1000)
         # Flaggo il file come in processamento
+        identificativo = uniform(0, 1000)
         db.fs.files.update_one({"processed": False}, {
                                "$set": {"processing": identificativo}})
         # Prendo il file facendo la query
         element = db.fs.files.find_one({"processing": identificativo})
-        # print(element)
         if element is not None:
-            print(f"Trovato un elemento in analisi...")
+            print("Trovato un elemento in analisi...")
             # Faccio la predizione
             classe = analizzatore.predict(element)
-            print(f"Elemento analizzato, aggiorno lo stato nel database...")
+            print("Elemento analizzato, aggiorno lo stato nel database...")
             # Aggiorno il file dicendo che è stato processato ed elimino la flag di processamento
             # Aggiorno anche il campo classe
             db.fs.files.update_one({"processing": identificativo}, {"$set": {
                                    "processed": True, "classification": classe}, "$unset": {"processing": 1}})
-            print(f"Stato aggiornato")
+            print("Stato aggiornato")
+            print("Cerco file da analizzare...")
         # Faccio il fetch ogni secondo
         time.sleep(1)
 
