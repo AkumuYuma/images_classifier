@@ -48,6 +48,12 @@ class Swift_adaptor():
         print("Oggetti nel container: ")
         print(container[1])
 
+    def get_info_container(self, nome_container):
+        """
+            Ritorna una lista con gli oggetti nel container
+        """
+        return self._swift.get_container(nome_container)[1]
+
     def info_oggetto(self, nome_container, nome_oggetto):
         """
             Restituisce il contenuto dell'oggetto, se non esiste, viene sollevata un'eccezione
@@ -73,7 +79,15 @@ class Swift_adaptor():
         """
         self._swift.delete_container(nome_container)
 
+    def cancella_oggetto(self, nome_container, nome_oggetto):
+        """
+            Cancella l'oggetto
+        """
+        self._swift.delete_object(nome_container, nome_oggetto)
+
 if __name__ == "__main__":
     ad = Swift_adaptor()
     ad.stampa_info_account()
-    ad.stampa_info_container("immagini")
+    # ad.crea_container("immagini")
+    # ad.cancella_oggetto("immagini", nome_immagine)
+    # ad.cancella_container("immagini")
