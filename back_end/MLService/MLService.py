@@ -2,9 +2,6 @@
 from pymongo import MongoClient
 # Per il demone
 import time
-
-
-# Classe analizzatore
 from random import randint, uniform
 
 
@@ -53,7 +50,7 @@ def demone():
             # Aggiorno anche il campo classe
             db.fs.files.update_one({"processing": identificativo}, {"$set": {
                                    "processed": True, "classification": classe}, "$unset": {"processing": 1}})
-
+            print(f"Stato aggiornato")
         # Faccio il fetch ogni secondo
         time.sleep(1)
 

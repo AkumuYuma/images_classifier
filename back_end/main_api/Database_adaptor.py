@@ -2,13 +2,14 @@ from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 
 class Database_adaptor():
-    def __init__(self, app, db_name):
+    def __init__(self, app, db_name, host = "localhost"):
         """
             Inizializzatore dell'adattatore.
             :param: app-> Flask app
             :param: db_name -> Nome del db da creare
+            :param: host (default = "localhost") -> Se runni l'api container deve essre il nome del db container
         """
-        app.config[ "MONGO_URI" ] = "mongodb://localhost:27017/" + db_name
+        app.config[ "MONGO_URI" ] = "mongodb://" + host + ":27017/" + db_name
         self._adaptor = PyMongo(app)
 
     def save_image(self, image_name, image, **kwargs):

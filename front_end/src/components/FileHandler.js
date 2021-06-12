@@ -3,7 +3,9 @@ import axios from 'axios';
 
 // Base url dell'api:
 // NOTA: Prima di andare in production bisogna salvare queste stringhe in env variables
-const baseUrl = "http://localhost:5000"
+
+const host = "90.147.170.229"
+const baseUrl = "http://" + host + ":443"
 // Dizionario per i path di base dell'api
 const apiPaths = {
     baseUploadUrl: baseUrl + "/api/upload/input=",

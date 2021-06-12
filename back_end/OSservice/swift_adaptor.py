@@ -6,57 +6,74 @@
 
 import requests
 import json
-import os
-import subprocess
+import swiftclient
+
 
 def stampa_dizionario(dizionario):
     for el in dizionario:
         print(el + ": " + dizionario[el])
 
+
+
 class Swift_adaptor():
     def __init__(self):
         # Leggo il token e l'url dai file nel sistema
         with open("/root/token_swift", "r") as f:
-            self._os_token = f.readline()
-            self._os_token = self._os_token.strip("\n")
+            os_token = f.readline()
+            os_token = os_token.strip("\n")
         with open("/root/swift_url", "r") as f:
-            self._os_storage_url = f.readline()
-            self._os_storage_url = self._os_storage_url.strip("\n")
-        self._auth_headers = { 'x-auth-token': self._os_token }
+            os_storage_url = f.readline()
+            os_storage_url = os_storage_url.strip("\n")
+        self._swift = swiftclient.client.Connection(preauthurl = os_storage_url, preauthtoken = os_token)
 
     def stampa_info_account(self):
         """
             Stampa informazioni generiche sul OS. (Info sull'account e containers)
         """
-        response = requests.get(self._os_storage_url, headers = self._auth_headers)
+        account = self._swift.get_account()
         print("")
         print("Info sull'account: ")
-        stampa_dizionario(response.headers)
-        print("")
-        print("Containers: ")
-        print(response.text)
+        stampa_dizionario(account[0])
+        print("Lista dei container: ")
+        print(account[1])
 
-    def aggancia_container(self, nomeContainer):
+    def stampa_info_container(self, nome_container):
         """
-            Restituisce l'url del container, se non esiste lo crea
+            Stampa info sul container. Se il container non esiste viene sollevata un'eccezione
         """
+        print("Faccio la richiesta al container")
         print("")
-        response = requests.get(self._os_storage_url + "/" + nomeContainer, headers = self._auth_headers, verify = False)
-        if response.status_code == 404:
-            # Il container non esiste, devo crearlo
-            print("Il container non esiste, lo creo")
-            response = requests.put(self._os_storage_url + "/" + nomeContainer, headers = self._auth_headers, verify = False)
-            print("Status code della risposta: " + response.status_code)
-        else:
-            print("Trovato un container di nome " + nomeContainer)
+        container = self._swift.get_container(nome_container)
+        stampa_dizionario(container[0])
+        print("Oggetti nel container: ")
+        print(container[1])
 
-        print("Stampo le info sul container: ")
-        stampa_dizionario(response.headers)
-        print("Stampo il conenuto del container: ")
-        print(response.text)
+    def info_oggetto(self, nome_container, nome_oggetto):
+        """
+            Restituisce il contenuto dell'oggetto, se non esiste, viene sollevata un'eccezione
+        """
+        response = self._swift.get_object(nome_container, nome_oggetto)
+        return response[1]
 
+    def crea_container(self, nome_container):
+        """
+            Crea un nuovo container con il nome passato
+        """
+        self._swift.put_container(nome_container)
 
+    def crea_oggetto(self, nome_container, nome_oggetto, contenuto):
+        """
+            Crea un nuovo oggetto nel container, conenuto deve essere un oggetto di tipo file.
+        """
+        self._swift.put_object(nome_container, nome_oggetto, contenuto)
 
-ad = Swift_adaptor()
-ad.stampa_info_account()
-ad.aggancia_container("container_prova")
+    def cancella_container(self, nome_container):
+        """
+            Cancella il container
+        """
+        self._swift.delete_container(nome_container)
+
+if __name__ == "__main__":
+    ad = Swift_adaptor()
+    ad.stampa_info_account()
+    ad.stampa_info_container("immagini")
