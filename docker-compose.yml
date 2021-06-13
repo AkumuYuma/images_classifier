@@ -1,0 +1,21 @@
+version: "3.7"
+services:
+  backend:
+    image: akumuyuma/backend:1.2
+    ports:
+      - 443:443
+
+  db:
+    image: mongo:latest
+    volumes:
+      - /data/progetto/mongoDB/database:/data/db
+    ports:
+      - 27017:27017
+
+  mlservice:
+    image: akumuyuma/mlservice:1.0
+
+  osservice:
+    image: akumuyuma/osservice:1.0
+    volumes:
+      - /root:/root

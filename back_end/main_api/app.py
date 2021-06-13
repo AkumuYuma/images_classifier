@@ -4,6 +4,9 @@ from Database_adaptor import Database_adaptor
 
 
 app = Flask(__name__)
+database = Database_adaptor(app, "images", "localhost")
+# Permetto le richieste CORS
+CORS(app)
 
 # Main path (test)
 @app.route('/')
@@ -72,7 +75,4 @@ def get_file(file_name):
 
 
 if __name__ == "__main__":
-    database = Database_adaptor(app, "images", "localhost")
-    # Permetto le richieste CORS
-    CORS(app)
     app.run(host="0.0.0.0", port = 443, debug=False)

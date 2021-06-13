@@ -50,9 +50,8 @@ def demone():
             #     outputfile.write(file.read())
             # print("File salvato in locale")
 
-            # db.fs.files.update_one({"processing": identificativo}, {
-            #                       "$set": {"permaSaved": True}, "$unset": {"processing": 1}})
-            db.fs.files.update_one({"processing": identificativo}, {"$unset": {"processing": 1}})
+            db.fs.files.update_one({"processing": identificativo}, {
+                                  "$set": {"permaSaved": True}, "$unset": {"processing": 1}})
 
         time.sleep(1)
 
