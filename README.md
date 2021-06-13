@@ -34,3 +34,13 @@ Ricapitolando, il workflow è:
 
 Con questo procedimento è anche possibile aggiungere un ulteriore servizio in maniera trasparente. Basterà produrre un'immagine, modificare il file docker-compose
 e restartare l'app.
+
+
+# TODOS
+L'app comunque necessita ancora modifiche a livello di codice. In particolare è necessario:
+- Debug al servizio di object storage. (Non sono sicuro che si riescano a leggere le immagini salvate)
+- Aggiungere parte effettiva di machine learning, in questo momento va solo una simulazione che classifica randomicamente
+- Refactoring al codice, in particolare:
+-   Utilizzo di un database adaptor per parti di ML e OS
+-   Utilizzo di variabili di ambiente per evitare hardcoding di dati e url
+
