@@ -8,6 +8,8 @@ COPY package*.json ./
 RUN npm install --production && npm install -g serve
 # Copio tutto il contenuto della cartella
 COPY . .
+# Cambio l'host per raggiungere il backend (tramite il discovery network di docker-compose)
+# RUN sed -i 's/localhost/backend/' ./src/components/FileHandler.js
 # Faccio la build dell'app
 RUN npm run build
 # NOTA: Dopo gli ultimi due comandi, l'immagine contiene l'intera app già buildata.

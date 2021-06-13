@@ -43,4 +43,4 @@ L'app comunque necessita ancora modifiche a livello di codice. In particolare è
 - Refactoring al codice, in particolare:
 -   Utilizzo di un database adaptor per parti di ML e OS
 -   Utilizzo di variabili di ambiente per evitare hardcoding di dati e url
-
+- Aggiungere un load balancer all'inizio dell'api
