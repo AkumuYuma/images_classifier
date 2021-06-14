@@ -73,16 +73,19 @@ class Swift_adaptor():
         """
         self._swift.put_container(nome_container)
 
-    def crea_oggetto(self, nome_container, nome_oggetto, contenuto, etag = None):
+    def crea_oggetto(self, nome_container, nome_oggetto, contenuto, headers = None):
         """
             Crea un nuovo oggetto nel container, conenuto deve essere un oggetto di tipo file.
         """
-        self._swift.put_object(nome_container, nome_oggetto, contenuto, etag = None)
+        self._swift.put_object(nome_container, nome_oggetto, contenuto, headers = None)
 
     def cancella_container(self, nome_container):
         """
-            Cancella il container
+            Cancella il container e tutto il suo contenuto
         """
+        for image in self.get_info_container(nome_container)[1]:
+            nome_immagine = image["name"]
+            self.cancella_oggetto(nome_container, nome_immagine)
         self._swift.delete_container(nome_container)
 
     def cancella_oggetto(self, nome_container, nome_oggetto):
@@ -91,10 +94,14 @@ class Swift_adaptor():
         """
         self._swift.delete_object(nome_container, nome_oggetto)
 
+    def close_conn(self):
+        self._swift.close()
+
+
 if __name__ == "__main__":
     ad = Swift_adaptor()
     ad.stampa_info_account()
-    # ad.stampa_info_container("immagini")
-    # nome_immagine = ad.get_info_container("immagini")[1][0]["name"]
-    # ad.cancella_oggetto("immagini", nome_immagine)
-    ad.stampa_info_account()
+    try:
+        ad.get_info_container("ciccio")
+    except:
+        print("non c'e il container")

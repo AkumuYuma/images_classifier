@@ -38,7 +38,7 @@ e restartare l'app.
 
 # TODOS
 L'app comunque necessita ancora modifiche a livello di codice. In particolare è necessario:
-- Debug al servizio di object storage. (Non sono sicuro che si riescano a leggere le immagini salvate)
+- Debug al servizio di object storage. (Non sono sicuro che si riescano a leggere le immagini salvate) Aggiungere risultato classificazione all'oggetto permanente
 - Aggiungere parte effettiva di machine learning, in questo momento va solo una simulazione che classifica randomicamente
 - Refactoring al codice, in particolare:
 -   Utilizzo di un database adaptor per parti di ML e OS

@@ -6,7 +6,7 @@ import gridfs
 
 from random import uniform
 import time
-from swift_adaptor import Swift_adaptor
+from swift_utilities.swift_adaptor import Swift_adaptor
 
 
 def demone():
@@ -22,9 +22,14 @@ def demone():
         # Nota che le credenziali si aggiornano ogni mezzora, ma ogni secondo chiamo il costruttore
         # Della classe Swift_adaptor quindi non ci sono problemi perchè ogni secondo leggo il nuovo token
         swift = Swift_adaptor()
-        # Creo un nuovo container (se esiste già non fa niente)
         nome_container = "immagini"
-        swift.crea_container(nome_container)
+        # Se il contaniner esiste già non faccio niente, altrimenti lo creo
+        try:
+            _ = swift.get_info_container(nome_container)
+            print("Il container esiste")
+        except:
+            print("Il container non esiste, lo creo")
+            swift.crea_container(nome_container)
 
         # Flaggo il file come in processamento
         identificativo = uniform(0, 1000)
@@ -38,21 +43,20 @@ def demone():
             file = fs.get(element["_id"])
             print("Trovato un elemento analizzato da salvare")
 
+            # with open(element["filename"], "wb") as f:
+            #     f.write(file.read())
+
+            # with open(element["filename"], "rb") as f:
+            swift.crea_oggetto(nome_container, element["filename"], file.read(), headers = {"classification": element["classification"]})
+
             # TODO Capire se funziona e aggiungere metadati
-            swift.crea_oggetto(nome_container, element["filename"], file.read())
             print(swift.info_oggetto(nome_container, element["filename"])[0])
 
             print("Elemento salvato su swift, aggiorno lo stato nel database e cancello il file")
-            # db.fs.chunks.delete_many({"files_id": element["_id"]})
-
-            # print("Scrivo l'oggetto su file")
-            # with open(element["filename"], "wb") as outputfile:
-            #     outputfile.write(file.read())
-            # print("File salvato in locale")
-
+            db.fs.chunks.delete_many({"files_id": element["_id"]})
             db.fs.files.update_one({"processing": identificativo}, {
                                   "$set": {"permaSaved": True}, "$unset": {"processing": 1}})
-
+        swift.close_conn()
         time.sleep(1)
 
 if __name__ == "__main__":
