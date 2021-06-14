@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   front_end:
-    image: akumuyuma/front_end:1.0
+    image: akumuyuma/front_end:1.1
     ports:
       - 80:80
   backend:
