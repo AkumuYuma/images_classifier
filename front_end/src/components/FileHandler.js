@@ -38,10 +38,8 @@ function FileHandler(props) {
         // Invio l'immagine all'api
         if (selectedFile != null) {
 
-            // Se non c'è fileId ne metto uno placeholder
-            if (fileId == null) {
-                setFileId(0);
-            }
+            // Se non c'è fileId metto un placeholder
+            setFileId(0);
 
 
             // Rimuovo lo stato precedente
@@ -91,10 +89,12 @@ function FileHandler(props) {
             </div>
 
             {/* Tasto per upload */}
-            <button className="submit" onClick={handleSubmit}>Upload Image</button>
+            {fileId != 0 && (
+                <button className="submit" onClick={handleSubmit}>Upload Image</button>
+            )}
             {/* Renderizzazione condizionale dell'id dell'immagine */}
             {fileId != null && (
-                fileId === 0 ? <p>Uploading file on database...</p> : <p>The file has been saved with id: {fileId}</p>
+                fileId === 0 ? <p>Uploading file on database, please wait...</p> : <p>The file has been saved with id: {fileId}</p>
             )}
 
             {/* Tasto per query dello stato */}
