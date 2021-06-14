@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t $1 .
+docker build -t akumuyuma/mlservice:$1 .

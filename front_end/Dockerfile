@@ -17,6 +17,6 @@ RUN npm run build
 FROM nginx:latest
 WORKDIR /app
 # Aggiorno la configurazione di nginx
-COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 # Copio la build dell'app
 COPY --from=build /app/build .
