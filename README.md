@@ -1,3 +1,40 @@
+# EikonApp 
+## Introduzione
+EikonApp è una web app per l'analisi di immagini tramite algoritmi di machine learning con un'architettura orientata ai microservizi pensata e progettata per supportare utenze elevate tramite l'utilizzo di tecnologie di cloud computing e in stile il più possibile DevOps. La progettazione e lo sviluppo dell'app rappresentano il progetto di fine corso dell'esame di Computing technologies (Laurea magistrale in Fisica con curriculum Particle Astroparticle Physics and Advanced Technologies UniBa). In particolare per il deployment sono state utilizzare risorse di ReCas nella forma di Infrastracture as a Service. 
+
+Lo schema implementativo dell'applicazione è mostrato di seguito: 
+
+
+## Analisi codice
+## Dockerizzazione
+## Workflow di developement sull'app 
+## Cose da migliorare
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # images_classifier
 Progetto di computing technologies
 
