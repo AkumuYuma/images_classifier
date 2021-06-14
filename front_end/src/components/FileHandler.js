@@ -22,11 +22,28 @@ function FileHandler(props) {
     // stato del file nel database
     const [status, setStatus] = useState(null);
 
+    const handleChange = (event) => {
+        // Gestione del cambiamento dell'immagine scelta
+        if (event.target.files && event.target.files[0]) {
+            // Aggiorno il file selezionato
+            setSelectedFile(event.target.files[0]);
+            // Resetto l'id del file
+            setFileId(null);
+        }
+
+    }
 
     const handleSubmit = () => {
         // Gestione Click su tasto upload
         // Invio l'immagine all'api
         if (selectedFile != null) {
+
+            // Se non c'è fileId ne metto uno placeholder
+            if (fileId == null) {
+                setFileId(0);
+            }
+
+
             // Rimuovo lo stato precedente
             setStatus(null);
             const fd = new FormData();
@@ -60,10 +77,7 @@ function FileHandler(props) {
             )}
 
             {/* Input */}
-            <input type="file" name={props.name} id="input-file" accept="image/*" onChange={event => {
-                // Aggiorno il file selezionato
-                if (event.target.files && event.target.files[0]) setSelectedFile(event.target.files[0]);
-            }} />
+            <input type="file" name={props.name} id="input-file" accept="image/*" onChange={handleChange} />
             {/* Label per immagine al posto del tasto */}
             <div className="label">
                 <label htmlFor="input-file" className="image-upload">
@@ -72,8 +86,6 @@ function FileHandler(props) {
                             <path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"></path>
                         </svg>
                     </figure>
-                    {/* Questo è un alias per il bottone scegli. Scelgo la foto tramite l'immagine */}
-                    {/*<i className="material-icons">add_photo_alternate</i> */}
                     Choose your file
                 </label>
             </div>
@@ -82,7 +94,7 @@ function FileHandler(props) {
             <button className="submit" onClick={handleSubmit}>Upload Image</button>
             {/* Renderizzazione condizionale dell'id dell'immagine */}
             {fileId != null && (
-                <p>The file has been saved with id: {fileId} </p>
+                fileId === 0 ? <p>Uploading file on database...</p> : <p>The file has been saved with id: {fileId}</p>
             )}
 
             {/* Tasto per query dello stato */}

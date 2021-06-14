@@ -13,6 +13,11 @@ Le immagini buildate sono disponibili sul dockerhub akumuyuma e sono:
     akumuyuma/osservice
 È stata anche utilizzata un'immagine base mongo per il database.
 
+# Nota per immagine front_end
+Per l'immagine del front_end è stata usata una multistage build. Questo vuol dire che quando buildi vengono prodotte due immagini,
+una con node e una con nginx. Quella con node installa le dipendenze e builda il progetto, quella con nginx fa il deployment.
+Quella che viene caricata su dockerhub però è solo quella di nginx. Questa è molto più compatta e contiene solo la build.
+
 Nella cartella è anche presente un docker-compose.yml. Questo permette di costruire l'intero servizio. Fa partire tutti i servizi contemporaneamente
 e produce un overlay network per permettere ai diversi servizi di comunicare utilizzando il loro nome (quello definito in docker-compose.yml).
 In realtà la necessità è che ogni servizio possa accedere al servizio di database. In questo caso l'accesso verrà effettuato usando l'URI:
