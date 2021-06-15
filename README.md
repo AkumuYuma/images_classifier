@@ -9,6 +9,8 @@ L'idea è che l'utente possa caricare immagini dal front end (o direttamente dal
 I vari servizi comunicano tra loro tramite l'overlay network messo a disposizione da docker-compose anche se si prevede la necessità di migrare a servizi più sofisticati come docker-swarm per una maggiore granularità dei servizi e maggiore resilienza (per maggiori informazioni vedi **Dockerizzazione**)
 Tutti i servizi vengono disaccoppiati il più possibile dalla tecnologia di cloud tramite adattatori software. 
 
+![Funzionmento](media_readme/GIF_sito.gif)
+
 ## Analisi codice
 Guardiamo brevemente la composizione delle diverse parti del codice dell'app. 
 * ### Front end 
