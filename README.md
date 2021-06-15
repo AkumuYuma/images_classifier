@@ -3,6 +3,7 @@
 EikonApp è una web app per l'analisi di immagini tramite algoritmi di machine learning con un'architettura orientata ai microservizi pensata e progettata per supportare utenze elevate tramite l'utilizzo di tecnologie di cloud computing e in stile il più possibile DevOps. La progettazione e lo sviluppo dell'app rappresentano il progetto di fine corso dell'esame di Computing technologies (Laurea magistrale in Fisica con curriculum Particle Astroparticle Physics and Advanced Technologies UniBa). In particolare per il deployment sono state utilizzare risorse di ReCas nella forma di Infrastracture as a Service. 
 
 Lo schema implementativo dell'applicazione è mostrato di seguito: 
+
 ![Schema](media_readme/Schema_progetto.png) 
 
 L'idea è che l'utente possa caricare immagini dal front end (o direttamente dall'api) e ricevere il risultato dell'analisi in tempo reale tramite una query dello stato di processamento. Nel caso in cui l'analisi richieda un tempo eccessivo o il servizio di ML sia irragiungibile, l'utente può lasciare un indirizzo mail e il risultato verrà inviato automaticamente alla conclusione del processamento. I file, insieme ai meta dati e alle informazioni sullo stato di processamento vengono salvate nel database. I servizi di Machine Learning e Object Storage faranno polling continuo sul database in cerca di file successivi da analizzare e salvare. Lo storage persistente è stato aggiunto in ottica di retraining periodico del classificatore. Per evitare colli di bottiglia, dopo il salvataggio in cloud di un'immagine il servizio di object storage procede all'eliminazione del file binario nel database (ma non dei metadati). 
@@ -10,6 +11,7 @@ I vari servizi comunicano tra loro tramite l'overlay network messo a disposizion
 Tutti i servizi vengono disaccoppiati il più possibile dalla tecnologia di cloud tramite adattatori software. 
 
 Attualmente la parte di front end è servita all'indirizzo http://90.147.170.229, mentre l'api è servita su http://90.147.170.229:443. Di seguito una demo sul funzionamento attuale. 
+
 ![Funzionmento](media_readme/GIF_sito.gif) 
 
 ## Analisi codice
