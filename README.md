@@ -1,5 +1,4 @@
-# EikonApp 
-[Icona](media_readme/favicon.png)
+# <img src="front_end/public/favicon.ico" width="40px" height="40px"> EikonApp 
 ## Introduzione
 EikonApp è una web app per l'analisi di immagini tramite algoritmi di machine learning con un'architettura orientata ai microservizi pensata e progettata per supportare utenze elevate tramite l'utilizzo di tecnologie di cloud computing e in stile il più possibile DevOps. La progettazione e lo sviluppo dell'app rappresentano il progetto di fine corso dell'esame di Computing technologies (Laurea magistrale in Fisica con curriculum Particle Astroparticle Physics and Advanced Technologies UniBa). In particolare per il deployment sono state utilizzare risorse di ReCas nella forma di Infrastracture as a Service. 
 
@@ -114,6 +113,10 @@ db.fs.files.update_one({"processed": True, "permaSaved": False}, {
                                   "$set": {"permaSaved": True}, "$unset": {"processing": 1}})
 ```
 Potrebbero esserci diversi servizi o diverse istanze di un servizi a fare la query ad un file da analizzare o da salvare ed è necessario garantire l'atomicità del processo. Per fare questo, il primo file trovato viene immediatamente flaggato come in processamento tramide un id univoco (generato randomicamente). Successivamente le operazioni vengono effettuate sull'oggetto in processamento.
+
+Una nota sulla parte di Object Storage. Il daemon si aspetta di leggere url e token di autenticazione in due file presenti nella cartella /root. 
+Questa comunque può risultare una vulnerabilità e sarebbe necessario trovare una soluzione più sicura. 
+
 ## Dockerizzazione
 Ogni servizio è stato isolato all'interno di un container. In particolare sono state buildate immagini Docker che contengono l'intero servizio, dunque per mettere in produzione l'app basta pullare le immagini e comporle con un orchestratore. 
 Attualmente le immagini sono disponibili all'indirizzo https://hub.docker.com/u/akumuyuma. 
@@ -122,6 +125,7 @@ In particolare le immagini sono:
 -   akumuyuma/backend
 -   akumuyuma/mlservice
 -   akumuyuma/osservice
+
 Ovviamente a questo si aggiunge l'immagine **mongo** utilizzata "as is" in quanto non richiedeva alcuna personalizzazione. 
 Vediamo un esempio di build delle immagini. Il seguente è il Dockerfile per il front end.
 ```Dockerfile
@@ -144,7 +148,36 @@ Ad esempio, per l'accesso al database, anzichè fare la richiesta a `mongodb://l
 
 ### Composizione dei docker
 I diversi servizi sono stati poi orchestrati utilizzando docker compose. 
+``` yml
+version: "3.7"
+services:
+  front_end:
+    image: akumuyuma/front_end:1.2
+    ports:
+      - 80:80
+  backend:
+    image: akumuyuma/backend:1.2
+    ports:
+      - 443:443
 
+  db:
+    image: mongo:latest
+    volumes:
+      - /data/progetto/mongoDB/database:/data/db
+    ports:
+      - 27017:27017
+
+  mlservice:
+    image: akumuyuma/mlservice:1.0
+
+  osservice:
+    image: akumuyuma/osservice:1.0
+    volumes:
+      - /root:/root
+```
+Tramite il comando `docker-compose up` è possibile far partire l'intera app. La necessità di avere un docker-compose non è solo determinata dalla necessità di automatizzare l'avvio e l'arresto dell'insieme di servizi, ma anche dalla possibilià di avere un overlay network (virtuale) tra i docker per permettere la comunicazione reciproca. È più chiaro adesso il motivo per cui l'uri del database diventa `mongodb://db:27017`, questo è determinato dalla scelta del nome del servizio. 
+
+Si noti inoltre che, grazie scelta di inserire il codice all'interno delle immagini in fase di build, non è necessario quasi mai montare parti del filesystem host nelle macchine virtuali. Eccezione è il servizio di Object Storage che, come detto prima necessita l'accesso ai file nella cartella /root. Questo costituirebbe una vulnerabilità se per qualche motivo l'isolamento del docker dovesse venire meno. Inoltre questa scelta riduce la portabilità del servizio che attualmente necessita l'esecuzione su questa particolare macchina. Una soluzione potrebbe essere quella di fare richiesta direttamente a swift per il refresh del token invece di leggerlo dal filesystem. 
 
 ## Workflow di developement sull'app 
 ## Cose da migliorare
