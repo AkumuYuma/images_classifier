@@ -1,4 +1,5 @@
 # EikonApp 
+[Icona](media_readme/favicon.png)
 ## Introduzione
 EikonApp è una web app per l'analisi di immagini tramite algoritmi di machine learning con un'architettura orientata ai microservizi pensata e progettata per supportare utenze elevate tramite l'utilizzo di tecnologie di cloud computing e in stile il più possibile DevOps. La progettazione e lo sviluppo dell'app rappresentano il progetto di fine corso dell'esame di Computing technologies (Laurea magistrale in Fisica con curriculum Particle Astroparticle Physics and Advanced Technologies UniBa). In particolare per il deployment sono state utilizzare risorse di ReCas nella forma di Infrastracture as a Service. 
 
@@ -9,12 +10,12 @@ L'idea è che l'utente possa caricare immagini dal front end (o direttamente dal
 I vari servizi comunicano tra loro tramite l'overlay network messo a disposizione da docker-compose. Si prevede la necessità di migrare a servizi più sofisticati come docker-swarm per una maggiore granularità dei servizi e resilienza (per maggiori informazioni vedi **Dockerizzazione**)
 Tutti i servizi vengono disaccoppiati il più possibile dalla tecnologia di cloud tramite adattatori software. 
 
-Attualmente la parte di front end è servita all'indirizzo http://90.147.170.229, mentre l'api è servita su http://90.147.170.229:443. 
+Attualmente la parte di front end è servita all'indirizzo http://90.147.170.229, mentre l'api è servita su http://90.147.170.229:443. Di seguito una demo sul funzionamento attuale. 
+![Funzionmento](media_readme/GIF_sito.gif) 
 
 ## Analisi codice
 Guardiamo brevemente la composizione delle diverse parti del codice dell'app. 
-* ### Front end 
-![Funzionmento](media_readme/GIF_sito.gif) 
+### Front end 
 Questa parte rappresenta un'interfaccia comoda per l'utilizzo del servizio. Si tratta di una applicazione a singola pagina renderizzata dinamicamente tramite l'uso di React.js. 
 La funzione triggerata dal tasto Upload Image è il seguente: 
 ```javascript
@@ -51,7 +52,7 @@ Alla query dello stato, invece, viene triggerata la funzione:
 ```
 In questo caso, invece, viene fatta una richiesta get all'API chiedendo lo stato di processamento e salvataggio del file. Anche in questo caso viene utilizzata una variabile di stato per aggiornare il testo da renderizzare a schermo.
 
-* ### Back end
+### Back end
 Questa parte è stata sviluppata in python tramite l'utilizzo di Flask. Il servizio di API salva file sul database (e restituisce l'id univoco sul db) e ne chiede lo stato di processamento. 
 ```python
 @app.route('/api/upload/input=<inputFile>', methods=["POST"])
@@ -94,7 +95,7 @@ def get_state(file_Id):
     }
     return jsonify(res)
 ```
-* ### Machine Learning e Object storage 
+### Machine Learning e Object storage 
 Attualmente la parte di Machine learning è solamente simulata. La parte interessante condivisa da entrambi i servizi è il modo di accedere al database.
 ```python
 identificativo = random.uniform(0, 1000)
@@ -123,7 +124,7 @@ In particolare le immagini sono:
 -   akumuyuma/osservice
 Ovviamente a questo si aggiunge l'immagine **mongo** utilizzata "as is" in quanto non richiedeva alcuna personalizzazione. 
 Vediamo un esempio di build delle immagini. Il seguente è il Dockerfile per il front end.
-```
+```Dockerfile
 FROM node:latest AS build
 WORKDIR /app
 COPY package*.json ./
